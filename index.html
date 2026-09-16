@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full w-full overflow-hidden">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shree Ganesha Memory & Observation Quest</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            100: '#FFF9E6',
+                            200: '#FFE699',
+                            300: '#FFD700',
+                            400: '#F59E0B',
+                            500: '#D97706',
+                            600: '#B45309',
+                            700: '#92400E'
+                        },
+                        saffron: {
+                            400: '#FF9933',
+                            500: '#FF7700',
+                            600: '#E65C00'
+                        },
+                        maroon: {
+                            800: '#4A0E17',
+                            900: '#2D080E',
+                            950: '#1A0408'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Cinzel', 'Georgia', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts for Divine Aesthetics -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Supabase JS CDN for Leaderboard Integration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        @keyframes pulseGlow {
+            0%, 100% { filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6)); }
+            50% { filter: drop-shadow(0 0 30px rgba(255, 153, 51, 0.9)); }
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
+        }
+        @keyframes shine {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .gold-shimmer-text {
+            background: linear-gradient(90deg, #FFD700, #FFF9E6, #FF9933, #FFD700);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 4s linear infinite;
+        }
+
+        .glass-panel {
+            background: rgba(18, 8, 28, 0.78);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.08);
+        }
+
+        .glass-card {
+            background: rgba(30, 12, 45, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 215, 0, 0.22);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(50, 18, 70, 0.85);
+            border-color: rgba(255, 215, 0, 0.65);
+            box-shadow: 0 10px 30px rgba(255, 153, 51, 0.3);
+        }
+
+        .glass-card.active {
+            background: linear-gradient(135deg, rgba(80, 15, 28, 0.9), rgba(45, 8, 14, 0.95));
+            border-color: #FFD700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.45);
+        }
+
+        /* 3D Card Flip styles */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 7, 26, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.4);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="h-full w-full bg-slate-950 text-slate-100 font-sans select-none overflow-hidden">
+
+    <!-- Fullscreen Ganesha Background -->
+    <div id="bgWrapper" class="fixed inset-0 z-0">
+        <div id="bgImage" class="absolute inset-0 bg-cover bg-center sm:bg-right no-repeat transition-transform duration-700" style="background-image: url('https://files.catbox.moe/jqxd7h.jpg');"></div>
+        <!-- Ethereal Dark Gradients for Crisp Readability -->
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/75 to-slate-950/40"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/50"></div>
+    </div>
+
+    <!-- Festive Canvas Particles & Confetti -->
+    <canvas id="particlesCanvas" class="fixed inset-0 pointer-events-none z-10"></canvas>
+    <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+    <!-- MAIN SLIDING VIEWPORT CONTAINER (4 Windows: 0=Welcome, 1=Registration, 2=Game, 3=Leaderboard) -->
+    <div id="viewportSlider" class="relative z-20 flex w-[400vw] h-full transition-transform duration-500 ease-in-out">
+
+        <!-- ========================================== -->
+        <!-- SCREEN 0: WELCOME SCREEN (GLASS UI SPEECH) -->
+        <!-- ========================================== -->
+        <section class="w-[100vw] h-full flex flex-col justify-between p-4 sm:p-8 overflow-y-auto">
+            
+            <!-- Top Header Navigation -->
+            <header class="w-full max-w-6xl mx-auto flex items-center justify-between gap-4 py-3 px-5 rounded-2xl glass-card z-30">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-saffron-500 to-gold-400 p-[2px] shadow-lg shadow-saffron-500/30 flex items-center justify-center">
+                        <div class="w-full h-full rounded-full bg-maroon-900 flex items-center justify-center text-xl">🕉️</div>
+                    </div>
+                    <div>
+                        <h1 class="font-serif text-lg sm:text-xl font-bold text-gold-shimmer-text leading-none">Ganesh Chaturthi</h1>
+                        <p class="text-[10px] text-amber-200/70 tracking-widest uppercase font-medium">Memory & Wisdom Quest</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button id="soundToggleBtn" onclick="gameApp.toggleAudio()" class="p-2 sm:px-3 sm:py-2 rounded-xl glass-card hover:border-gold-400/60 text-amber-300 flex items-center gap-2 text-xs sm:text-sm font-semibold">
+                        <span id="soundIcon">🔔</span> <span class="hidden sm:inline" id="soundText">Sound ON</span>
+                    </button>
+                    <button onclick="gameApp.openSupabaseModal()" class="p-2 sm:px-3 sm:py-2 rounded-xl glass-card hover:border-gold-400/60 text-amber-300 flex items-center gap-2 text-xs sm:text-sm font-semibold">
+                        <span>⚙️</span> <span class="hidden sm:inline">Supabase DB</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Welcome Glass Card Overlay -->
+            <div class="w-full max-w-2xl mx-auto my-auto glass-panel rounded-3xl p-6 sm:p-10 space-y-6 relative overflow-hidden border-2 border-gold-500/30 shadow-2xl">
+                
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-saffron-500/15 border border-saffron-500/40 text-saffron-300 text-xs font-bold uppercase tracking-wider">
+                    <span>✨ Festive Edition 2026</span>
+                </div>
+
+                <div class="space-y-2">
+                    <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gold-shimmer-text leading-tight">
+                        Shree Ganesha's Sacred Quest
+                    </h2>
+                    <p class="text-xs sm:text-sm text-amber-200/90 font-medium">
+                        Welcome, Seeker of Wisdom & Joy!
+                    </p>
+                </div>
+
+                <!-- Glass UI Welcome Speech -->
+                <div class="p-4 sm:p-5 rounded-2xl bg-slate-950/60 border border-gold-500/20 text-xs sm:text-sm leading-relaxed text-slate-200 space-y-3">
+                    <p>
+                        "Om Gam Ganapataye Namaha! Embark on a holy journey to celebrate Lord Ganesha's festival. Test your visual observation, match sacred offerings (Modak, Durva, Diya), and unlock divine wisdom snippets!"
+                    </p>
+                    <p class="text-amber-300/90 font-serif italic text-xs">
+                        "May Bappa grant sharp focus, prosperity, and joy to all players!"
+                    </p>
+                </div>
+
+                <!-- Action Button Cluster -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <button onclick="gameApp.slideTo(1)" class="py-4 px-6 rounded-2xl bg-gradient-to-r from-saffron-500 via-gold-400 to-saffron-600 hover:from-saffron-400 hover:to-gold-300 text-maroon-950 font-serif font-black text-lg tracking-wider uppercase shadow-xl shadow-saffron-500/30 hover:shadow-gold-400/50 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group">
+                        <span>✨ START QUEST</span>
+                        <span class="text-xl group-hover:translate-x-1 transition-transform">➡️</span>
+                    </button>
+
+                    <button onclick="gameApp.openLeaderboardScreen()" class="py-4 px-6 rounded-2xl glass-card hover:border-gold-400 text-gold-300 font-serif font-bold text-base tracking-wide uppercase transition hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2">
+                        <span>🏆 LEADERBOARD</span>
+                    </button>
+                </div>
+
+                <!-- Database Status Badge -->
+                <div class="flex items-center justify-between pt-2 border-t border-gold-500/15 text-[11px] text-amber-200/60">
+                    <span class="flex items-center gap-2">
+                        <span id="dbStatusDot" class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                        <span id="dbStatusText">Database: Local Storage Mode</span>
+                    </span>
+                    <button onclick="gameApp.openSupabaseModal()" class="underline hover:text-gold-400 transition">Configure Live Supabase</button>
+                </div>
+            </div>
+
+            <footer class="text-center text-xs text-amber-200/50 py-2">
+                🕉️ Created for Ganesh Chaturthi Celebration • May wisdom prevail
+            </footer>
+        </section>
+
+        <!-- ======================================================= -->
+        <!-- SCREEN 1: PLAYER SETUP & GAME MODE SELECTION (SLIDE 1)  -->
+        <!-- ======================================================= -->
+        <section class="w-[100vw] h-full flex flex-col justify-between p-4 sm:p-8 overflow-y-auto">
+            <header class="w-full max-w-5xl mx-auto flex items-center justify-between py-2">
+                <button onclick="gameApp.slideTo(0)" class="px-4 py-2 rounded-xl glass-card text-amber-300 font-bold text-xs flex items-center gap-2">
+                    ⬅️ Back to Welcome
+                </button>
+                <h2 class="font-serif font-bold text-lg text-gold-400">Player Setup</h2>
+            </header>
+
+            <div class="w-full max-w-xl mx-auto my-auto glass-panel rounded-3xl p-6 sm:p-8 space-y-6 border border-gold-500/30">
+                <div class="text-center space-y-1">
+                    <h3 class="font-serif text-2xl font-extrabold text-gold-shimmer-text">Enter Seeker Details</h3>
+                    <p class="text-xs text-amber-200/70">Required for accurate leaderboard tracking</p>
+                </div>
+
+                <!-- Player Details Form -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs uppercase font-bold text-amber-300 mb-1">Player Name</label>
+                        <input type="text" id="playerNameInput" placeholder="Enter your name (e.g. Aarav)" class="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-gold-500/30 text-gold-200 placeholder-slate-500 focus:outline-none focus:border-gold-400 transition font-medium text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs uppercase font-bold text-amber-300 mb-1">Combination / Unique ID</label>
+                        <input type="text" id="playerComboInput" placeholder="Enter Combination ID (e.g. Aarav#108 or Phone/Class)" class="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-gold-500/30 text-gold-200 placeholder-slate-500 focus:outline-none focus:border-gold-400 transition font-medium text-sm">
+                        <p class="text-[10px] text-amber-200/50 mt-1">Combined with your name to distinguish score entries on the leaderboard.</p>
+                    </div>
+                </div>
+
+                <!-- Game Mode Selector -->
+                <div class="space-y-2">
+                    <label class="block text-xs uppercase font-bold text-amber-300">Choose Quest Mode</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div id="setupModeMatch" onclick="gameApp.selectSetupMode('match')" class="glass-card active p-4 rounded-2xl cursor-pointer flex flex-col justify-between gap-2">
+                            <span class="text-3xl">🃏</span>
+                            <div>
+                                <h4 class="font-serif font-bold text-sm text-gold-200">Sacred Card Match</h4>
+                                <p class="text-[11px] text-slate-300/70 mt-0.5">Flip face-down cards to discover pairs & festival lore.</p>
+                            </div>
+                        </div>
+
+                        <div id="setupModeObs" onclick="gameApp.selectSetupMode('observation')" class="glass-card p-4 rounded-2xl cursor-pointer flex flex-col justify-between gap-2">
+                            <span class="text-3xl">👁️</span>
+                            <div>
+                                <h4 class="font-serif font-bold text-sm text-gold-200">Observation Quest</h4>
+                                <p class="text-[11px] text-slate-300/70 mt-0.5">Memorize scene items and answer quantity quizzes.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button onclick="gameApp.confirmPlayerAndStart()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-saffron-500 to-gold-400 text-maroon-950 font-serif font-black text-base uppercase tracking-wider shadow-lg hover:opacity-95 transition">
+                    🚀 Launch Game
+                </button>
+            </div>
+
+            <div></div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SCREEN 2: GAMEPLAY ARENA & HUD (SLIDE 2)       -->
+        <!-- ============================================== -->
+        <section class="w-[100vw] h-full flex flex-col justify-between p-3 sm:p-6 overflow-y-auto">
+            
+            <!-- Game HUD -->
+            <header class="w-full max-w-5xl mx-auto glass-card rounded-2xl p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3 z-30">
+                <div class="flex items-center gap-3">
+                    <button onclick="gameApp.slideTo(0)" class="px-3 py-1.5 rounded-xl glass-card text-amber-300 font-bold text-xs">
+                        🏠 Exit
+                    </button>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="hudPlayerName" class="font-serif font-bold text-sm text-gold-300">Aarav</span>
+                            <span id="hudPlayerCombo" class="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">#108</span>
+                        </div>
+                        <div id="hudLevelBadge" class="text-[10px] font-bold text-saffron-400 uppercase">Level 1 (4x2 Grid)</div>
+                    </div>
+                </div>
+
+                <!-- Live Gameplay Stats -->
+                <div class="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm font-bold">
+                    <div>
+                        <span class="text-amber-200/60 uppercase text-[10px] block">Lives</span>
+                        <span id="hudLives" class="text-red-400 text-base">❤️ ❤️ ❤️</span>
+                    </div>
+
+                    <div>
+                        <span class="text-amber-200/60 uppercase text-[10px] block">Score</span>
+                        <span id="hudScore" class="font-serif text-gold-400 text-lg">0</span>
+                    </div>
+
+                    <div>
+                        <span class="text-amber-200/60 uppercase text-[10px] block">Combo</span>
+                        <span id="hudCombo" class="text-saffron-400 text-base">🔥 1x</span>
+                    </div>
+
+                    <div>
+                        <span class="text-amber-200/60 uppercase text-[10px] block">Time</span>
+                        <span id="hudTimer" class="font-mono text-amber-200 text-base">00:45</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Gameplay Container Area -->
+            <main class="w-full max-w-5xl mx-auto my-auto py-3">
+                
+                <!-- CARD MATCH GAME BOARD -->
+                <div id="matchBoardContainer" class="flex flex-col gap-4">
+                    <div id="matchGrid" class="grid gap-3 max-w-3xl mx-auto w-full p-4 rounded-2xl bg-slate-950/70 border border-gold-500/20">
+                        <!-- Dynamic Cards Rendered Here -->
+                    </div>
+                </div>
+
+                <!-- OBSERVATION QUEST BOARD -->
+                <div id="obsBoardContainer" class="hidden flex-col gap-4 text-center">
+                    <div id="obsHeader" class="space-y-1">
+                        <h3 id="obsPhaseTitle" class="font-serif text-xl font-bold text-gold-300">Memorize the Divine Items!</h3>
+                        <p id="obsPhaseDesc" class="text-xs text-amber-200/70">Remember what you see before time runs out!</p>
+                        <div class="w-full max-w-md mx-auto bg-slate-900 rounded-full h-2 mt-2 overflow-hidden border border-gold-500/30">
+                            <div id="obsProgressBar" class="bg-gradient-to-r from-saffron-500 to-gold-400 h-full w-full transition-all duration-1000 linear"></div>
+                        </div>
+                    </div>
+
+                    <div id="obsGrid" class="grid grid-cols-4 gap-3 max-w-2xl mx-auto w-full p-4 rounded-2xl bg-slate-950/70 border border-gold-500/20">
+                        <!-- Observation items dynamically rendered -->
+                    </div>
+
+                    <!-- Observation Quiz Box -->
+                    <div id="obsQuizStage" class="hidden max-w-lg mx-auto w-full glass-card p-6 rounded-2xl flex-col gap-4">
+                        <span class="text-4xl mx-auto">❓</span>
+                        <h4 id="quizQuestionText" class="font-serif text-base font-bold text-gold-200">How many Modaks were visible?</h4>
+                        <div id="quizOptionsGrid" class="grid grid-cols-2 gap-3 pt-2"></div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- Educational Lore Snippet Banner -->
+            <div id="educationalLoreBanner" class="hidden w-full max-w-2xl mx-auto p-3 rounded-xl bg-gradient-to-r from-saffron-900/90 to-maroon-900/90 border border-gold-400/40 text-xs text-amber-100 flex items-center gap-3 animate-pulse">
+                <span class="text-2xl" id="loreSymbol">🍬</span>
+                <div>
+                    <span class="font-serif font-bold text-gold-300 block" id="loreTitle">Divine Association</span>
+                    <span id="loreText" class="text-[11px] leading-snug">Modak is Lord Ganesha's favorite sweet offering!</span>
+                </div>
+            </div>
+
+            <div></div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SCREEN 3: LEADERBOARD & SUPABASE (SLIDE 3)     -->
+        <!-- ============================================== -->
+        <section class="w-[100vw] h-full flex flex-col justify-between p-4 sm:p-8 overflow-y-auto">
+            <header class="w-full max-w-5xl mx-auto flex items-center justify-between py-2">
+                <button onclick="gameApp.slideTo(0)" class="px-4 py-2 rounded-xl glass-card text-amber-300 font-bold text-xs flex items-center gap-2">
+                    🏠 Home
+                </button>
+                <h2 class="font-serif font-bold text-xl text-gold-shimmer-text">Hall of Wisdom & Trophies</h2>
+                <button onclick="gameApp.openSupabaseModal()" class="px-3 py-1.5 rounded-xl glass-card text-amber-300 text-xs font-semibold">
+                    ⚙️ Supabase Config
+                </button>
+            </header>
+
+            <div class="w-full max-w-4xl mx-auto my-auto glass-panel rounded-3xl p-4 sm:p-8 space-y-4 border border-gold-500/30">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-gold-500/20 pb-4">
+                    <div>
+                        <h3 class="font-serif text-lg font-bold text-gold-300">Top Seekers Scoreboard</h3>
+                        <p class="text-xs text-amber-200/60">Live results powered by Supabase / Local database</p>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-xs">
+                        <button onclick="gameApp.loadLeaderboardData('all')" class="px-3 py-1.5 rounded-lg glass-card text-gold-300 font-bold">All Scores</button>
+                        <button onclick="gameApp.clearLocalLeaderboard()" class="px-3 py-1.5 rounded-lg bg-red-900/40 border border-red-500/30 text-red-300 font-bold hover:bg-red-800/60 transition">Clear Local</button>
+                    </div>
+                </div>
+
+                <!-- Leaderboard Table -->
+                <div class="overflow-x-auto max-h-[50vh]">
+                    <table class="w-full text-left text-xs sm:text-sm">
+                        <thead class="bg-slate-950/80 text-gold-400 font-serif uppercase tracking-wider text-[11px] sticky top-0">
+                            <tr>
+                                <th class="p-3">Rank</th>
+                                <th class="p-3">Seeker Name</th>
+                                <th class="p-3">Combo ID</th>
+                                <th class="p-3">Score</th>
+                                <th class="p-3">Level</th>
+                                <th class="p-3">Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardTbody" class="divide-y divide-gold-500/10 text-slate-200 font-medium">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <footer class="text-center text-xs text-amber-200/50 py-2">
+                Shree Ganesha Leaderboard • Updated in Real Time
+            </footer>
+        </section>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL 1: SUPABASE CONFIGURATION MODAL      -->
+    <!-- ========================================== -->
+    <div id="supabaseModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+        <div class="w-full max-w-lg glass-panel p-6 sm:p-8 rounded-3xl space-y-5 border border-gold-500/40 relative">
+            <button onclick="gameApp.closeModal('supabaseModal')" class="absolute top-4 right-4 text-amber-300 font-bold">✕</button>
+            
+            <div class="flex items-center gap-3 border-b border-gold-500/20 pb-3">
+                <span class="text-3xl">⚙️</span>
+                <div>
+                    <h3 class="font-serif text-xl font-bold text-gold-shimmer-text">Supabase Connection</h3>
+                    <p class="text-xs text-amber-200/70">Connect live backend database for global scores</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-amber-300 mb-1">SUPABASE URL</label>
+                    <input type="text" id="supabaseUrlInput" placeholder="https://xyz.supabase.co" class="w-full px-3 py-2.5 rounded-xl bg-slate-950/80 border border-gold-500/30 text-gold-200">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-amber-300 mb-1">SUPABASE ANON KEY</label>
+                    <input type="password" id="supabaseKeyInput" placeholder="eyJh..." class="w-full px-3 py-2.5 rounded-xl bg-slate-950/80 border border-gold-500/30 text-gold-200">
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-950/60 border border-gold-500/20 text-[11px] text-amber-200/80 space-y-1">
+                    <span class="font-bold text-gold-400 block">Required SQL Table Setup:</span>
+                    <pre class="bg-slate-900 p-2 rounded text-[10px] text-slate-300 overflow-x-auto select-all">
+CREATE TABLE ganesha_memory_scores (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  player_name text NOT NULL,
+  combination_id text NOT NULL,
+  score integer NOT NULL,
+  level integer DEFAULT 1,
+  time_seconds integer DEFAULT 0,
+  created_at timestamp with time zone DEFAULT now()
+);</pre>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="gameApp.saveSupabaseConfig()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-saffron-500 to-gold-400 text-maroon-950 font-bold uppercase text-xs">
+                    Save & Connect
+                </button>
+                <button onclick="gameApp.closeModal('supabaseModal')" class="px-4 py-3 rounded-xl glass-card text-amber-300 text-xs font-bold">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: VICTORY & GAME OVER MODAL -->
+    <div id="victoryModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+        <div class="w-full max-w-md glass-panel p-6 sm:p-8 rounded-3xl text-center space-y-5 border border-gold-500/50 relative shadow-2xl">
+            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-saffron-500 to-gold-400 p-[3px] mx-auto shadow-lg shadow-saffron-500/50">
+                <div class="w-full h-full rounded-full bg-maroon-900 flex items-center justify-center text-4xl">🎉</div>
+            </div>
+
+            <div class="space-y-1">
+                <h3 id="victoryTitle" class="font-serif text-2xl font-extrabold text-gold-shimmer-text">Blessings Received!</h3>
+                <p id="victorySubtitle" class="text-xs text-amber-100/80">You completed the level with excellence!</p>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-950/70 border border-gold-500/20 grid grid-cols-2 gap-3 text-left text-xs">
+                <div>
+                    <span class="text-amber-200/60 uppercase text-[10px]">Final Score</span>
+                    <div id="vicFinalScore" class="font-serif text-xl font-bold text-gold-400">1,250</div>
+                </div>
+                <div>
+                    <span class="text-amber-200/60 uppercase text-[10px]">Level Reached</span>
+                    <div id="vicLevel" class="font-serif text-xl font-bold text-saffron-400">Level 1</div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <button onclick="gameApp.nextLevelOrRestart()" id="vicNextBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-saffron-500 to-gold-400 text-maroon-950 font-serif font-black uppercase text-xs tracking-wider shadow-lg">
+                    Next Level ➡️
+                </button>
+                <button onclick="gameApp.openLeaderboardScreen()" class="w-full py-3 rounded-xl glass-card text-gold-300 font-bold uppercase text-xs">
+                    View Leaderboard 🏆
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * WEB AUDIO API SOUND SYNTHESIZER
+         */
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playBell() {
+                if (!this.enabled) return;
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1046.5, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(523.25, this.ctx.currentTime + 1.2);
+                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.2);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 1.2);
+            }
+
+            playFlip() {
+                if (!this.enabled) return;
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(250, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(500, this.ctx.currentTime + 0.12);
+                gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.12);
+            }
+
+            playMatch() {
+                if (!this.enabled) return;
+                this.init();
+                [523.25, 659.25, 783.99, 1046.50].forEach((f, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(f, this.ctx.currentTime + idx * 0.04);
+                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime + idx * 0.04);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.04 + 0.6);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(this.ctx.currentTime + idx * 0.04);
+                    osc.stop(this.ctx.currentTime + idx * 0.04 + 0.6);
+                });
+            }
+
+            playWrong() {
+                if (!this.enabled) return;
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(140, this.ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(90, this.ctx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.25);
+            }
+
+            playVictory() {
+                if (!this.enabled) return;
+                this.init();
+                [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((f, i) => {
+                    setTimeout(() => this.playBell(), i * 160);
+                });
+            }
+        }
+
+        const sounds = new SoundEngine();
+    </script>
+
+    <script>
+        /**
+         * CANVAS PARTICLE & CONFETTI ENGINE
+         */
+        class ParticleEngine {
+            constructor() {
+                this.pCanvas = document.getElementById('particlesCanvas');
+                this.pCtx = this.pCanvas.getContext('2d');
+                this.cCanvas = document.getElementById('confettiCanvas');
+                this.cCtx = this.cCanvas.getContext('2d');
+                
+                this.particles = [];
+                this.confetti = [];
+                
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+                this.initParticles();
+                this.animate();
+            }
+
+            resize() {
+                this.pCanvas.width = window.innerWidth;
+                this.pCanvas.height = window.innerHeight;
+                this.cCanvas.width = window.innerWidth;
+                this.cCanvas.height = window.innerHeight;
+            }
+
+            initParticles() {
+                this.particles = [];
+                const count = Math.min(Math.floor(window.innerWidth / 25), 40);
+                for (let i = 0; i < count; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.pCanvas.width,
+                        y: Math.random() * this.pCanvas.height,
+                        size: Math.random() * 6 + 4,
+                        speedY: Math.random() * 0.7 + 0.3,
+                        rotation: Math.random() * 360,
+                        rotSpeed: (Math.random() - 0.5) * 2,
+                        opacity: Math.random() * 0.6 + 0.3,
+                        color: Math.random() > 0.5 ? '#FF9933' : '#FFD700'
+                    });
+                }
+            }
+
+            triggerConfetti() {
+                this.confetti = [];
+                for (let i = 0; i < 100; i++) {
+                    this.confetti.push({
+                        x: this.cCanvas.width / 2,
+                        y: this.cCanvas.height / 2,
+                        vx: (Math.random() - 0.5) * 15,
+                        vy: (Math.random() - 0.8) * 15,
+                        size: Math.random() * 8 + 4,
+                        color: ['#FFD700', '#FF7700', '#FF1493', '#00FFCC', '#FFFFFF'][Math.floor(Math.random() * 5)],
+                        life: 1.0
+                    });
+                }
+            }
+
+            animate() {
+                // Background petals
+                this.pCtx.clearRect(0, 0, this.pCanvas.width, this.pCanvas.height);
+                this.particles.forEach(p => {
+                    p.y += p.speedY;
+                    p.rotation += p.rotSpeed;
+                    if (p.y > this.pCanvas.height + 10) p.y = -10;
+
+                    this.pCtx.save();
+                    this.pCtx.translate(p.x, p.y);
+                    this.pCtx.rotate((p.rotation * Math.PI) / 180);
+                    this.pCtx.globalAlpha = p.opacity;
+                    this.pCtx.fillStyle = p.color;
+                    this.pCtx.beginPath();
+                    this.pCtx.ellipse(0, 0, p.size, p.size / 2, 0, 0, Math.PI * 2);
+                    this.pCtx.fill();
+                    this.pCtx.restore();
+                });
+
+                // Win Confetti
+                this.cCtx.clearRect(0, 0, this.cCanvas.width, this.cCanvas.height);
+                this.confetti.forEach((c, idx) => {
+                    c.x += c.vx;
+                    c.y += c.vy;
+                    c.vy += 0.3; // gravity
+                    c.life -= 0.015;
+
+                    if (c.life > 0) {
+                        this.cCtx.save();
+                        this.cCtx.globalAlpha = c.life;
+                        this.cCtx.fillStyle = c.color;
+                        this.cCtx.fillRect(c.x, c.y, c.size, c.size);
+                        this.cCtx.restore();
+                    }
+                });
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        let particlesInstance;
+        window.addEventListener('load', () => {
+            particlesInstance = new ParticleEngine();
+        });
+    </script>
+
+    <script>
+        /**
+         * SACRED SYMBOLS & EDUCATIONAL LORE DATA
+         */
+        const FESTIVAL_ITEMS = [
+            { symbol: '🐘', name: 'Ganesha', lore: 'Lord Ganesha is the Vighnaharta (Remover of Obstacles) and Deity of Wisdom!' },
+            { symbol: '🍬', name: 'Modak', lore: 'Modak is Lord Ganesha\'s favorite sweet dumpling offering!' },
+            { symbol: '🐭', name: 'Mushak', lore: 'Mooshika the mouse is Lord Ganesha\'s loyal sacred vehicle!' },
+            { symbol: '🪔', name: 'Holy Diya', lore: 'Diyas symbolize light, purity, and driving away spiritual darkness!' },
+            { symbol: '🌿', name: 'Durva Grass', lore: '21 blades of sacred Durva grass are traditionally offered during puja!' },
+            { symbol: '🌺', name: 'Hibiscus', lore: 'Red Hibiscus (Jaswand) is the beloved flower offered to Bappa!' },
+            { symbol: '🥥', name: 'Coconut', lore: 'Coconut represents surrendering the ego to divine consciousness!' },
+            { symbol: '🎨', name: 'Rangoli', lore: 'Rangoli decorates entrances to welcome prosperity and divine energy!' },
+            { symbol: '🥁', name: 'Festival Dhol', lore: 'Dhol & Tasha beats echo joyfully during Ganesha Aarti & Visarjan!' },
+            { symbol: '🪷', name: 'Lotus', lore: 'Lotus represents purity, divine knowledge, and spiritual enlightenment!' }
+        ];
+
+        class GaneshaQuestApp {
+            constructor() {
+                this.currentSlide = 0;
+                this.playerName = 'Seeker';
+                this.playerCombo = '108';
+                this.gameMode = 'match'; // 'match' | 'observation'
+                this.level = 1;
+                this.score = 0;
+                this.streak = 1;
+                this.lives = 3;
+                this.timer = null;
+                this.timeLeft = 45;
+
+                // Supabase config
+                this.supabaseUrl = localStorage.getItem('ganesha_sp_url') || '';
+                this.supabaseKey = localStorage.getItem('ganesha_sp_key') || '';
+                this.supabaseClient = null;
+
+                this.initSupabaseClient();
+            }
+
+            // Slide Navigation
+            slideTo(index) {
+                sounds.playFlip();
+                this.currentSlide = index;
+                const slider = document.getElementById('viewportSlider');
+                slider.style.transform = `translateX(-${index * 100}vw)`;
+            }
+
+            toggleAudio() {
+                sounds.enabled = !sounds.enabled;
+                document.getElementById('soundIcon').textContent = sounds.enabled ? '🔔' : '🔕';
+                document.getElementById('soundText').textContent = sounds.enabled ? 'Sound ON' : 'Sound OFF';
+                if (sounds.enabled) sounds.playBell();
+            }
+
+            selectSetupMode(m) {
+                this.gameMode = m;
+                document.getElementById('setupModeMatch').classList.toggle('active', m === 'match');
+                document.getElementById('setupModeObs').classList.toggle('active', m === 'observation');
+                sounds.playFlip();
+            }
+
+            confirmPlayerAndStart() {
+                const nameVal = document.getElementById('playerNameInput').value.trim();
+                const comboVal = document.getElementById('playerComboInput').value.trim();
+
+                this.playerName = nameVal || 'Seeker Aarav';
+                this.playerCombo = comboVal || 'Aarav#108';
+
+                // Update HUD
+                document.getElementById('hudPlayerName').textContent = this.playerName;
+                document.getElementById('hudPlayerCombo').textContent = '#' + this.playerCombo;
+
+                this.level = 1;
+                this.score = 0;
+                this.streak = 1;
+                this.lives = 3;
+
+                this.slideTo(2);
+                this.startLevel();
+            }
+
+            startLevel() {
+                this.updateHUD();
+                document.getElementById('educationalLoreBanner').classList.add('hidden');
+
+                if (this.gameMode === 'match') {
+                    this.initMatchLevel();
+                } else {
+                    this.initObsLevel();
+                }
+            }
+
+            updateHUD() {
+                document.getElementById('hudScore').textContent = this.score.toLocaleString();
+                document.getElementById('hudCombo').textContent = `🔥 ${this.streak}x`;
+                document.getElementById('hudLives').textContent = '❤️ '.repeat(Math.max(0, this.lives));
+                
+                let levelDesc = `Level ${this.level}`;
+                if (this.level === 1) levelDesc += ' (4x2 Grid)';
+                else if (this.level === 2) levelDesc += ' (4x3 Grid)';
+                else if (this.level === 3) levelDesc += ' (4x4 Grid)';
+                else levelDesc += ' (5x4 Grid)';
+                
+                document.getElementById('hudLevelBadge').textContent = levelDesc;
+            }
+
+            // MODE A: SACRED CARD MATCH
+            initMatchLevel() {
+                document.getElementById('matchBoardContainer').classList.remove('hidden');
+                document.getElementById('obsBoardContainer').classList.add('hidden');
+
+                // Level configuration pair count
+                let pairCount = 4;
+                if (this.level === 2) pairCount = 6;
+                else if (this.level === 3) pairCount = 8;
+                else if (this.level >= 4) pairCount = 10;
+
+                this.matchedPairs = 0;
+                this.totalPairs = pairCount;
+                this.flippedCards = [];
+
+                const pool = [...FESTIVAL_ITEMS].sort(() => 0.5 - Math.random()).slice(0, pairCount);
+                const deck = [...pool, ...pool].sort(() => 0.5 - Math.random());
+
+                const grid = document.getElementById('matchGrid');
+                grid.innerHTML = '';
+
+                // Dynamic grid cols
+                if (pairCount === 4) grid.className = 'grid grid-cols-4 gap-3 max-w-xl mx-auto w-full p-4 rounded-2xl bg-slate-950/70 border border-gold-500/20';
+                else if (pairCount === 6) grid.className = 'grid grid-cols-4 sm:grid-cols-4 gap-3 max-w-2xl mx-auto w-full p-4 rounded-2xl bg-slate-950/70 border border-gold-500/20';
+                else if (pairCount === 8) grid.className = 'grid grid-cols-4 gap-3 max-w-3xl mx-auto w-full p-4 rounded-2xl bg-slate-950/70 border border-gold-500/20';
+                else grid.className = 'grid grid-cols-4 sm:grid-cols-5 gap-3 max-w-4xl mx-auto w-full p-3 rounded-2xl bg-slate-950/70 border border-gold-500/20';
+
+                deck.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'flip-card h-24 sm:h-28 perspective-1000 cursor-pointer';
+                    card.dataset.symbol = item.symbol;
+
+                    card.innerHTML = `
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front glass-card flex flex-col items-center justify-center p-2 text-gold-400">
+                                <span class="text-2xl sm:text-3xl">🕉️</span>
+                                <span class="text-[9px] font-bold uppercase tracking-widest text-amber-200/60 mt-1">Bappa</span>
+                            </div>
+                            <div class="flip-card-back glass-panel bg-gradient-to-b from-maroon-900 to-slate-950 border-2 border-gold-400 flex flex-col items-center justify-center p-2 text-center">
+                                <span class="text-3xl sm:text-4xl">${item.symbol}</span>
+                                <span class="text-[10px] font-serif font-bold text-gold-300 mt-1 leading-tight">${item.name}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    card.onclick = () => this.handleCardClick(card, item);
+                    grid.appendChild(card);
+                });
+
+                this.startTimer(pairCount * 8);
+            }
+
+            handleCardClick(card, item) {
+                if (this.flippedCards.length >= 2 || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+                sounds.playFlip();
+                card.classList.add('flipped');
+                this.flippedCards.push({ card, item });
+
+                if (this.flippedCards.length === 2) {
+                    const [c1, c2] = this.flippedCards;
+                    if (c1.item.symbol === c2.item.symbol) {
+                        // Match Found!
+                        setTimeout(() => {
+                            sounds.playMatch();
+                            c1.card.classList.add('matched');
+                            c2.card.classList.add('matched');
+
+                            // Show Educational Lore Banner
+                            document.getElementById('loreSymbol').textContent = c1.item.symbol;
+                            document.getElementById('loreTitle').textContent = `${c1.item.name} Lore`;
+                            document.getElementById('loreText').textContent = c1.item.lore;
+                            document.getElementById('educationalLoreBanner').classList.remove('hidden');
+
+                            this.matchedPairs++;
+                            this.score += 200 * this.streak;
+                            this.streak++;
+                            this.updateHUD();
+                            this.flippedCards = [];
+
+                            if (this.matchedPairs === this.totalPairs) {
+                                this.handleLevelComplete();
+                            }
+                        }, 400);
+                    } else {
+                        // Wrong Match
+                        setTimeout(() => {
+                            sounds.playWrong();
+                            c1.card.classList.remove('flipped');
+                            c2.card.classList.remove('flipped');
+                            this.streak = 1;
+                            this.lives--;
+                            this.updateHUD();
+                            this.flippedCards = [];
+
+                            if (this.lives <= 0) {
+                                this.handleGameOver();
+                            }
+                        }, 900);
+                    }
+                }
+            }
+
+            // MODE B: OBSERVATION QUEST
+            initObsLevel() {
+                document.getElementById('matchBoardContainer').classList.add('hidden');
+                document.getElementById('obsBoardContainer').classList.remove('hidden');
+                document.getElementById('obsBoardContainer').classList.add('flex');
+                document.getElementById('obsQuizStage').classList.add('hidden');
+                document.getElementById('obsGrid').classList.remove('hidden');
+
+                const totalItems = 6 + (this.level * 2);
+                const pool = [...FESTIVAL_ITEMS].sort(() => 0.5 - Math.random()).slice(0, 4);
+
+                this.obsItems = [];
+                for (let i = 0; i < totalItems; i++) {
+                    this.obsItems.push(pool[Math.floor(Math.random() * pool.length)]);
+                }
+
+                const grid = document.getElementById('obsGrid');
+                grid.innerHTML = '';
+                this.obsItems.forEach(item => {
+                    const cell = document.createElement('div');
+                    cell.className = 'h-20 glass-card rounded-xl flex flex-col items-center justify-center p-2 text-center';
+                    cell.innerHTML = `<span class="text-3xl">${item.symbol}</span><span class="text-[9px] text-amber-200/70 font-bold mt-1">${item.name}</span>`;
+                    grid.appendChild(cell);
+                });
+
+                const obsTime = 6;
+                const bar = document.getElementById('obsProgressBar');
+                bar.style.transitionDuration = '0s';
+                bar.style.width = '100%';
+                setTimeout(() => {
+                    bar.style.transitionDuration = obsTime + 's';
+                    bar.style.width = '0%';
+                }, 50);
+
+                setTimeout(() => {
+                    this.showObsQuiz(pool);
+                }, obsTime * 1000);
+
+                this.startTimer(obsTime + 30);
+            }
+
+            showObsQuiz(pool) {
+                sounds.playBell();
+                document.getElementById('obsGrid').classList.add('hidden');
+                document.getElementById('obsQuizStage').classList.remove('hidden');
+                document.getElementById('obsQuizStage').classList.add('flex');
+
+                const target = pool[Math.floor(Math.random() * pool.length)];
+                const actual = this.obsItems.filter(i => i.symbol === target.symbol).length;
+
+                document.getElementById('quizQuestionText').innerHTML = `How many <span class="text-gold-400 font-bold">${target.name}s</span> (${target.symbol}) were visible?`;
+
+                const options = new Set([actual]);
+                while (options.size < 4) {
+                    let fake = actual + (Math.floor(Math.random() * 5) - 2);
+                    if (fake >= 0) options.add(fake);
+                }
+
+                const optionsArr = Array.from(options).sort((a, b) => a - b);
+                const grid = document.getElementById('quizOptionsGrid');
+                grid.innerHTML = '';
+                optionsArr.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'py-3 rounded-xl glass-card hover:border-gold-400 text-gold-300 font-bold text-lg';
+                    btn.textContent = opt;
+                    btn.onclick = () => {
+                        if (opt === actual) {
+                            sounds.playMatch();
+                            this.score += 500 * this.streak;
+                            this.streak++;
+                            this.handleLevelComplete();
+                        } else {
+                            sounds.playWrong();
+                            this.lives--;
+                            this.updateHUD();
+                            if (this.lives <= 0) this.handleGameOver();
+                            else this.startLevel();
+                        }
+                    };
+                    grid.appendChild(btn);
+                });
+            }
+
+            startTimer(seconds) {
+                clearInterval(this.timer);
+                this.timeLeft = seconds;
+                this.updateTimerDisplay();
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    this.updateTimerDisplay();
+                    if (this.timeLeft <= 0) {
+                        clearInterval(this.timer);
+                        sounds.playWrong();
+                        this.handleGameOver();
+                    }
+                }, 1000);
+            }
+
+            updateTimerDisplay() {
+                const m = Math.floor(this.timeLeft / 60).toString().padStart(2, '0');
+                const s = (this.timeLeft % 60).toString().padStart(2, '0');
+                document.getElementById('hudTimer').textContent = `${m}:${s}`;
+            }
+
+            handleLevelComplete() {
+                clearInterval(this.timer);
+                sounds.playVictory();
+                if (particlesInstance) particlesInstance.triggerConfetti();
+
+                document.getElementById('victoryTitle').textContent = `Level ${this.level} Cleared! 🎉`;
+                document.getElementById('victorySubtitle').textContent = 'Blessed with divine focus and memory!';
+                document.getElementById('vicFinalScore').textContent = this.score.toLocaleString();
+                document.getElementById('vicLevel').textContent = `Level ${this.level}`;
+                document.getElementById('vicNextBtn').textContent = 'Next Level ➡️';
+
+                this.saveScoreToDatabase();
+                this.openModal('victoryModal');
+            }
+
+            handleGameOver() {
+                clearInterval(this.timer);
+                document.getElementById('victoryTitle').textContent = 'Quest Complete';
+                document.getElementById('victorySubtitle').textContent = 'May Bappa bless you with even greater focus next time!';
+                document.getElementById('vicFinalScore').textContent = this.score.toLocaleString();
+                document.getElementById('vicLevel').textContent = `Level ${this.level}`;
+                document.getElementById('vicNextBtn').textContent = 'Try Again 🔄';
+
+                this.saveScoreToDatabase();
+                this.openModal('victoryModal');
+            }
+
+            nextLevelOrRestart() {
+                this.closeModal('victoryModal');
+                if (this.lives > 0) {
+                    this.level++;
+                } else {
+                    this.level = 1;
+                    this.score = 0;
+                    this.lives = 3;
+                    this.streak = 1;
+                }
+                this.startLevel();
+            }
+
+            initSupabaseClient() {
+                if (this.supabaseUrl && this.supabaseKey && window.supabase) {
+                    try {
+                        this.supabaseClient = window.supabase.createClient(this.supabaseUrl, this.supabaseKey);
+                        document.getElementById('dbStatusDot').className = 'w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse';
+                        document.getElementById('dbStatusText').textContent = 'Database: Connected to Supabase Live';
+                        return;
+                    } catch (e) { console.error('Supabase init error', e); }
+                }
+                document.getElementById('dbStatusDot').className = 'w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse';
+                document.getElementById('dbStatusText').textContent = 'Database: Local Storage Mode';
+            }
+
+            openSupabaseModal() {
+                document.getElementById('supabaseUrlInput').value = this.supabaseUrl;
+                document.getElementById('supabaseKeyInput').value = this.supabaseKey;
+                this.openModal('supabaseModal');
+            }
+
+            saveSupabaseConfig() {
+                this.supabaseUrl = document.getElementById('supabaseUrlInput').value.trim();
+                this.supabaseKey = document.getElementById('supabaseKeyInput').value.trim();
+                localStorage.setItem('ganesha_sp_url', this.supabaseUrl);
+                localStorage.setItem('ganesha_sp_key', this.supabaseKey);
+                this.initSupabaseClient();
+                this.closeModal('supabaseModal');
+            }
+
+            async saveScoreToDatabase() {
+                const record = {
+                    player_name: this.playerName,
+                    combination_id: this.playerCombo,
+                    score: this.score,
+                    level: this.level,
+                    time_seconds: 45 - this.timeLeft,
+                    created_at: new Date().toISOString()
+                };
+
+                // Save to LocalStorage always
+                const localScores = JSON.parse(localStorage.getItem('ganesha_local_scores') || '[]');
+                localScores.push(record);
+                localScores.sort((a, b) => b.score - a.score);
+                localStorage.setItem('ganesha_local_scores', JSON.stringify(localScores.slice(0, 50)));
+
+                // Save to Supabase if configured
+                if (this.supabaseClient) {
+                    try {
+                        await this.supabaseClient.from('ganesha_memory_scores').insert([record]);
+                    } catch (err) {
+                        console.warn('Could not sync score to Supabase', err);
+                    }
+                }
+            }
+
+            async openLeaderboardScreen() {
+                this.closeModal('victoryModal');
+                this.slideTo(3);
+                await this.loadLeaderboardData();
+            }
+
+            async loadLeaderboardData() {
+                const tbody = document.getElementById('leaderboardTbody');
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-amber-200/60">Loading scores...</td></tr>';
+
+                let scores = [];
+
+                if (this.supabaseClient) {
+                    try {
+                        const { data, error } = await this.supabaseClient
+                            .from('ganesha_memory_scores')
+                            .select('*')
+                            .order('score', { ascending: false })
+                            .limit(20);
+                        if (!error && data) scores = data;
+                    } catch (e) { console.warn(e); }
+                }
+
+                if (scores.length === 0) {
+                    scores = JSON.parse(localStorage.getItem('ganesha_local_scores') || '[]');
+                }
+
+                if (scores.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-amber-200/50">No scores logged yet. Be the first seeker!</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                scores.forEach((s, idx) => {
+                    const row = document.createElement('tr');
+                    row.className = idx % 2 === 0 ? 'bg-slate-900/40' : 'bg-slate-950/60';
+                    row.innerHTML = `
+                        <td class="p-3 font-bold ${idx === 0 ? 'text-gold-400 text-base' : 'text-slate-300'}">#${idx + 1}</td>
+                        <td class="p-3 font-bold text-amber-200">${s.player_name || 'Seeker'}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px]">${s.combination_id || '#108'}</span></td>
+                        <td class="p-3 font-serif font-bold text-gold-300">${(s.score || 0).toLocaleString()}</td>
+                        <td class="p-3">Lvl ${s.level || 1}</td>
+                        <td class="p-3 text-slate-400">${s.time_seconds || 0}s</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            clearLocalLeaderboard() {
+                localStorage.removeItem('ganesha_local_scores');
+                this.loadLeaderboardData();
+            }
+
+            openModal(id) {
+                document.getElementById(id).classList.remove('hidden');
+            }
+
+            closeModal(id) {
+                document.getElementById(id).classList.add('hidden');
+            }
+        }
+
+        let gameApp;
+        window.addEventListener('DOMContentLoaded', () => {
+            gameApp = new GaneshaQuestApp();
+        });
+    </script>
+</body>
+</html>
