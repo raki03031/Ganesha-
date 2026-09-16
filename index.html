@@ -224,9 +224,9 @@
                 <div class="flex items-center justify-between pt-2 border-t border-gold-500/15 text-[11px] text-amber-200/60">
                     <span class="flex items-center gap-2">
                         <span id="dbStatusDot" class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-                        <span id="dbStatusText">Database: Local Storage Mode</span>
+                        <span id="dbStatusText">Database: Connecting to Supabase…</span>
                     </span>
-                    <button onclick="gameApp.openSupabaseModal()" class="underline hover:text-gold-400 transition">Configure Live Supabase</button>
+                    <button onclick="gameApp.openSupabaseModal()" class="underline hover:text-gold-400 transition">Supabase Connected</button>
                 </div>
             </div>
 
@@ -452,7 +452,7 @@
                 <span class="text-3xl">⚙️</span>
                 <div>
                     <h3 class="font-serif text-xl font-bold text-gold-shimmer-text">Supabase Connection</h3>
-                    <p class="text-xs text-amber-200/70">Connect live backend database for global scores</p>
+                    <p class="text-xs text-amber-200/70">Live backend is already connected for global scores</p>
                 </div>
             </div>
 
@@ -484,7 +484,7 @@ CREATE TABLE ganesha_memory_scores (
 
             <div class="flex gap-2">
                 <button onclick="gameApp.saveSupabaseConfig()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-saffron-500 to-gold-400 text-maroon-950 font-bold uppercase text-xs">
-                    Save & Connect
+                    Close
                 </button>
                 <button onclick="gameApp.closeModal('supabaseModal')" class="px-4 py-3 rounded-xl glass-card text-amber-300 text-xs font-bold">
                     Cancel
@@ -759,11 +759,13 @@ CREATE TABLE ganesha_memory_scores (
                 this.timer = null;
                 this.timeLeft = 45;
 
-                // Supabase config
-                this.supabaseUrl = localStorage.getItem('ganesha_sp_url') || '';
-                this.supabaseKey = localStorage.getItem('ganesha_sp_key') || '';
+                // Supabase config (pre-connected to the project's public frontend key)
+                // The publishable/anon key is safe to use in browser code when RLS protects the table.
+                this.supabaseUrl = 'https://bbonclhkcgpjeskovchr.supabase.co';
+                this.supabaseKey = 'sb_publishable_H9_xzuxrGJQnSH5zbTgZyw_PKFxu6VL';
                 this.supabaseClient = null;
 
+                // Keep the connection persistent for this game; no manual setup is required.
                 this.initSupabaseClient();
             }
 
@@ -1095,16 +1097,16 @@ CREATE TABLE ganesha_memory_scores (
             }
 
             openSupabaseModal() {
+                // The app is already connected to the configured Supabase project.
                 document.getElementById('supabaseUrlInput').value = this.supabaseUrl;
                 document.getElementById('supabaseKeyInput').value = this.supabaseKey;
+                document.getElementById('supabaseKeyInput').type = 'password';
                 this.openModal('supabaseModal');
             }
 
             saveSupabaseConfig() {
-                this.supabaseUrl = document.getElementById('supabaseUrlInput').value.trim();
-                this.supabaseKey = document.getElementById('supabaseKeyInput').value.trim();
-                localStorage.setItem('ganesha_sp_url', this.supabaseUrl);
-                localStorage.setItem('ganesha_sp_key', this.supabaseKey);
+                // Keep the app locked to the configured project so users cannot accidentally
+                // replace the live leaderboard connection from the UI.
                 this.initSupabaseClient();
                 this.closeModal('supabaseModal');
             }
@@ -1128,7 +1130,8 @@ CREATE TABLE ganesha_memory_scores (
                 // Save to Supabase if configured
                 if (this.supabaseClient) {
                     try {
-                        await this.supabaseClient.from('ganesha_memory_scores').insert([record]);
+                        const { error } = await this.supabaseClient.from('ganesha_memory_scores').insert([record]);
+                        if (error) throw error;
                     } catch (err) {
                         console.warn('Could not sync score to Supabase', err);
                     }
